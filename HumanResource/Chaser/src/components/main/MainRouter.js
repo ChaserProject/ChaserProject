@@ -10,7 +10,7 @@ import Color from '../../content/color/Color';
 import { horizontalScale, fontScale } from '../../utillities/Scale';
 import Profile from '../profile/Profile';
 
-const { white, brownBlack, brownGray, black,bluegreen } = Color;
+const { white, brownBlack, brownGray, black } = Color;
 
 export const Tabs = TabNavigator({
     HomeTab: {
