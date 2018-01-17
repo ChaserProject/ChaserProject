@@ -1,7 +1,7 @@
 
 export default {
-    black: '#000',
-    white: '#FFF',
+    black: '#000000',
+    white: '#FFFFFF',
     blue5: '#3698DC',
     gray2: '#DDDDDD',
     gray4: '#BBBBBB',
@@ -20,5 +20,7 @@ export default {
     blue3: '#00bcd4',
     blue7: '#3f51b5',
     bluegreen: '#31f704',
-    bluelight: '#11f985'
+    bluelight: '#11f985',
+    black2: '#222222',
+    red: '#FF0000'
 };

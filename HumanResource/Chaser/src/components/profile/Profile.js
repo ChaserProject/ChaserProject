@@ -11,9 +11,15 @@ import Image3 from '../../content/images/LoginBackGround3.jpg';
 import Avatar from '../../content/images/avatarsino.jpg';
 import Cover from '../../content/images/cover.jpg';
 import CommonStyle from '../../content/styles/CommonStyle';
-import { width, height, verticalScale, fontScale, horizontalScale } from '../../utillities/Scale';
+import {
+    width, height, verticalScale,
+    fontScale, horizontalScale
+} from '../../utillities/Scale';
 
-const { white, gray2, black, gray4, blue5, brownLightGray, whiteBlue, orange2, blue3, blue7, green3 } = Color;
+const {
+    white, gray2, black, gray4, blue5, brownLightGray,
+    whiteBlue, orange2, blue3, blue7, green3
+} = Color;
 const { baseText, smallText, baseBoldText } = CommonStyle;
 
 class Profile extends Component {
@@ -254,7 +260,8 @@ const styles = StyleSheet.create({
     },
     btnEdit: {
         flexDirection: 'row',
-        padding: fontScale(5),
+        paddingVertical: verticalScale(5),
+        paddingHorizontal: horizontalScale(7),
         borderRadius: fontScale(4),
         backgroundColor: orange2,
         marginRight: horizontalScale(10),

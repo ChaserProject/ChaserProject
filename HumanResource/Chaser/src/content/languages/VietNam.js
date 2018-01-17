@@ -1,8 +1,8 @@
 
 export default {
     hello: 'xin chao',
-    Password: 'Mật khẩu',
-    EmailOrPhone: 'Email hoặc Số điện thoại',
+    Password: 'Mật khẩu...',
+    PhoneNumber: 'Số điện thoại cuả bạn...',
     Login: 'Đăng nhập',
     CreateAccount: 'Tạo tài khoản',
     NeedHelp: 'Cần trợ giúp?',

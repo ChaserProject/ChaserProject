@@ -17,7 +17,7 @@ import CommentRouter from '../comment/CommentRouter';
 import Job from '../job/Job';
 import { Languages } from '../../content/languages/Languages';
 
-const { white, brownBlack, black,bluegreen } = Color;
+const { white, brownBlack, black, bluegreen } = Color;
 
 const HomeRouter = StackNavigator({
     HomeScreen: {
@@ -55,25 +55,7 @@ const HomeRouter = StackNavigator({
             headerRight: (<Text />),
             headerTintColor: white
         })
-    },
-    JobSreen: {
-        screen: Job,
-        navigationOptions: () => ({
-            headerTitle: <JobTopBarTitle />,
-            headerStyle: {
-                backgroundColor: black,
-                shadowColor: black,
-                shadowOpacity: 1,
-                shadowRadius: 0,
-                shadowOffset: {
-                    height: 1,
-                    width: 0
-                },
-            },
-            headerRight: <JobTopBarRight color={white} />,
-            headerTintColor: white
-        })
-    },
+    },   
     CommentRouter: {
         screen: CommentRouter
     }

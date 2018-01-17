@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Picker, TextInput, FlatList, Image } from 'react-native';
+import {
+    View, Text, TouchableOpacity,
+    FlatList, Image, ActivityIndicator
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
 
@@ -11,19 +14,52 @@ import Security from '../../content/images/Security.png';
 import PGPB from '../../content/images/PGPB.png';
 import FaceModel from '../../content/images/FaceModel.png';
 import Sell from '../../content/images/Sell.png';
-import { width, height, fontScale, verticalScale, horizontalScale } from '../../utillities/Scale';
 
-const { white, gray2, black, gray4, blue5, whiteBlue, brownBlack } = Color;
+import {
+    getJobsByJobTypeOrderId
+} from '../../api/JobAPI';
+
+import {
+    formatTimeHHmm
+} from '../../utillities/Utils';
+import {
+    width,
+    height,
+    fontScale,
+    verticalScale,
+    horizontalScale
+} from '../../utillities/Scale';
+
+const {
+    white, gray2, black, gray4, blue5, whiteBlue, brownBlack
+} = Color;
 
 class JobList extends Component {
     constructor(props) {
         super(props);
         this.state = ({
-
+            jobs: null
         });
     }
 
-    onRenderItem(item, navigate) {
+    componentWillMount() {
+        const params = this.props.navigation.state.params;
+        const { key } = params;
+        this.onGetJobData(key);
+    }
+
+    onGetJobData = async (key) => {
+        try {
+            let res = await getJobsByJobTypeOrderId(key);
+            res = await res.json();
+            this.state.jobs = res;
+            this.setState(this.state);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    onRenderItem(job, navigate) {
         return (<View
             style={{
                 width: width - horizontalScale(24),
@@ -46,12 +82,44 @@ class JobList extends Component {
                 <Image source={HouseWork} style={{ width: fontScale(56), height: fontScale(56) }} />
             </View>
             <View style={{ flex: 3, paddingRight: horizontalScale(10) }}>
-                <Text numberOfLines={1} ellipsizeMode={'tail'} style={{ fontSize: 10, color: brownBlack, alignSelf: 'flex-end', paddingTop: verticalScale(6) }}>20:00</Text>
+                <Text
+                    numberOfLines={1}
+                    ellipsizeMode={'tail'}
+                    style={{
+                        fontSize: 10,
+                        color: brownBlack,
+                        alignSelf: 'flex-end',
+                        paddingTop: verticalScale(6)
+                    }}
+                >{formatTimeHHmm(new Date(job.dateCreated))}
+                </Text>
                 <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{ color: brownBlack, fontWeight: 'bold', fontSize: fontScale(13) }}>Clean House sad sad sad sad sad asd asd sad sad sa</Text>
-                    <Text numberOfLines={2} ellipsizeMode={'tail'} style={{ fontSize: fontScale(11) }}>Vim company sad asd sad  jshgad ashdg shadg sadgs agd jsagds gds gdsdg sd gsad gsadg sdg shagd shagdgas dgs hjags hdgasd gsa dgsaj asd sad sad adssadas asd sad asd sa</Text>
+                    <Text
+                        numberOfLines={1}
+                        ellipsizeMode={'tail'}
+                        style={{
+                            color: brownBlack,
+                            fontWeight: 'bold',
+                            fontSize: fontScale(13)
+                        }}
+                    >{job.jobName}
+                    </Text>
+                    <Text
+                        numberOfLines={2}
+                        ellipsizeMode={'tail'}
+                        style={{
+                            fontSize: fontScale(11)
+                        }}
+                    >{job.user.company.companyName}
+                    </Text>
                 </View>
-                <TouchableOpacity style={{ alignSelf: 'flex-end', paddingBottom: verticalScale(4) }} onPress={() => navigate('JobSreen')}>
+                <TouchableOpacity
+                    style={{
+                        alignSelf: 'flex-end',
+                        paddingBottom: verticalScale(4)
+                    }}
+                    onPress={() => navigate('JobSreen', { jobId: job._id })}
+                >
                     <MaterialIcons
                         size={fontScale(18)}
                         name={'forward'}
@@ -64,19 +132,20 @@ class JobList extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const { lang } = this.props;
-
+        const { jobs } = this.state;
+        if (jobs === null) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
         return (
             <View style={{ flex: 1, paddingVertical: 10, backgroundColor: whiteBlue }}>
-                <Text style={{ display: 'none' }}>{lang}</Text>
                 <FlatList
                     style={{}}
-                    data={[{ key: '0' },
-                    { key: '1' },
-                    { key: '2' },
-                    { key: '3' },
-                    { key: '4' },
-                    { key: '5' }]}
+                    data={jobs}
+                    keyExtractor={(item, index) => index}
                     renderItem={({ item }) => this.onRenderItem(item, navigate)}
                     numColumns={1}
                 />

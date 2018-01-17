@@ -17,4 +17,8 @@ function fontScale(size) {
     return (fontHeight + fontWidth) / 2;
 }
 
-export { horizontalScale, verticalScale, moderateScale, width, height, fontScale };
+export {
+    horizontalScale, verticalScale, moderateScale,
+    width, height, fontScale
+};
+

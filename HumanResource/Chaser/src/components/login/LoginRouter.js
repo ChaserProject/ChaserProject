@@ -2,20 +2,17 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import { connect } from 'react-redux';
 
 import Login from './Login';
 import Help from '../help/Help';
 import CreateAccount from '../create_account/CreateAccount';
-import { SideMenu } from '../../components/main/MainRouter';
 import CommonStyle from '../../content/styles/CommonStyle';
 import Color from '../../content/color/Color';
-import { Languages } from '../../content/languages/Languages';
 
 const { headerNavTitle, headerNav } = CommonStyle;
 const { white } = Color;
 
-const LoginStack = StackNavigator({
+const LoginRouter = StackNavigator({
     Login: {
         screen: Login,
         navigationOptions: () => ({
@@ -27,7 +24,7 @@ const LoginStack = StackNavigator({
     CreateAccount: {
         screen: CreateAccount,
         navigationOptions: () => ({
-            headerTitle: Languages.CreateAccount,
+            headerTitle: 'Tao tai khoan',
             headerTitleStyle: headerNavTitle,
             headerStyle: headerNav,
             headerTintColor: white,
@@ -37,27 +34,16 @@ const LoginStack = StackNavigator({
     Help: {
         screen: Help,
         navigationOptions: () => ({
-            headerTitle: Languages.NeedHelp,
+            headerTitle: 'Can Tro giup?',
             headerStyle: headerNav,
             headerTitleStyle: headerNavTitle,
             headerTintColor: white,
             headerRight: <Text />
-        })
-    },
-    Home: {
-        screen: SideMenu,
-        navigationOptions: () => ({
-            headerStyle: {
-                display: 'none'
-            }
         })
     }
 }, {
         initialRouteName: 'Login'
     });
 
-function mapStateToProps(state) {
-    return { lang: state.lang };
-}
-export default connect(mapStateToProps)(LoginStack);
+export default LoginRouter;
 

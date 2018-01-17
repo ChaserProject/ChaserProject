@@ -12,7 +12,7 @@ import ButtonShowMenu from '../home/ButtonShowMenu';
 
 import { Languages } from '../../content/languages/Languages';
 
-const { white, brownBlack, black, yellow2,bluegreen } = Color;
+const { white, brownBlack, black, yellow2, bluegreen } = Color;
 
 const JoinedJobListRouter = StackNavigator({
     JoinedJobListScreen: {
@@ -31,25 +31,6 @@ const JoinedJobListRouter = StackNavigator({
             },
             headerLeft: <ButtonShowMenu navigation={navigation} />,
             headerRight: <Text />
-        })
-    },
-    JobSreen: {
-        screen: Job,
-        navigationOptions: () => ({
-            headerTitle: <JobTopBarTitle />,
-            headerTitleStyle: { alignSelf: 'center', color: white },
-            headerStyle: {
-                backgroundColor: black,
-                shadowColor: black,
-                shadowOpacity: 1,
-                shadowRadius: 0,
-                shadowOffset: {
-                    height: 1,
-                    width: 0
-                },
-            },
-            headerRight: <JobTopBarRight color={yellow2} />,
-            headerTintColor: white
         })
     }
 }, {

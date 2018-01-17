@@ -14,7 +14,7 @@ import Sell from '../../content/images/Sell.png';
 
 import { width, height } from '../../utillities/Scale';
 
-const { white, gray2, black, gray4, blue5,bluegreen } = Color;
+const { white, gray2, black, gray4, blue5, bluegreen } = Color;
 
 class HomeIndex extends Component {
     constructor(props) {
@@ -36,7 +36,7 @@ class HomeIndex extends Component {
     }
 
     onRenderItem(item, navigate) {
-        return (<TouchableOpacity onPress={() => navigate('JobListSreen')}>
+        return (<TouchableOpacity onPress={() => navigate('JobListSreen', { key: item.key })}>
             <View
                 style={{
                     width: width / 2,
@@ -64,12 +64,12 @@ class HomeIndex extends Component {
             <View style={{ flex: 1 }}>
                 <Text style={{ display: 'none' }}>{lang}</Text>
                 <FlatList
-                    data={[{ key: '0', title: 'Sự kiện', bgColor: '#419b05', color: '#FFF8E1' },
-                    { key: '1', title: 'Việc nhà', bgColor: '#52c405', color: '#FFF8E1' },
+                    data={[{ key: '3', title: 'Sự kiện', bgColor: '#419b05', color: '#FFF8E1' },
+                    { key: '4', title: 'Việc nhà', bgColor: '#52c405', color: '#FFF8E1' },
                     { key: '2', title: 'Bán hàng', bgColor: '#04d34a', color: '#FFF8E1' },
-                    { key: '3', title: 'Bảo vệ', bgColor: '#05a83c', color: '#FFF8E1' },
-                    { key: '4', title: 'Quảng cáo', bgColor: '#06a857', color: '#FFF8E1' },
-                    { key: '5', title: 'Mẫu', bgColor: '#11f985', color: '#FFF8E1' }]}
+                    { key: '1', title: 'Bảo vệ', bgColor: '#05a83c', color: '#FFF8E1' },
+                    { key: '5', title: 'Quảng cáo', bgColor: '#06a857', color: '#FFF8E1' },
+                    { key: '6', title: 'Mẫu', bgColor: '#11f985', color: '#FFF8E1' }]}
                     renderItem={({ item }) => this.onRenderItem(item, navigate)}
                     numColumns={2}
                 //ListHeaderComponent={Header}

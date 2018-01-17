@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Picker, TextInput, FlatList, Image, ScrollView } from 'react-native';
+import {
+    View, Text, StyleSheet, TouchableOpacity,
+    Image, ScrollView, ActivityIndicator, AsyncStorage
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
 import { Languages, setLanguage } from '../../content/languages/Languages';
@@ -8,21 +11,133 @@ import { width, height, fontScale, verticalScale, horizontalScale } from '../../
 import HouseWork from '../../content/images/HouseWork.png';
 import Panel from '../../components/panel/Panel';
 import CommonStyle from '../../content/styles/CommonStyle';
+import {
+    increaseViewOfJob,
+    getJobById
+} from '../../api/JobAPI';
+import {
+    getUserIdentity
+} from '../../api/JsonWebTokenAPI';
+import {
+    formatDate,
+    splitStr
+} from '../../utillities/Utils';
 
-const { white, gray2, black, gray4, blue5, whiteBlue, brownLightGray } = Color;
-const { titleBoldText, baseText, smallText } = CommonStyle;
+const {
+    white, gray2, black, gray4, blue5, whiteBlue, brownLightGray
+} = Color;
+const {
+     titleBoldText, baseText, smallText
+} = CommonStyle;
 
 class Job extends Component {
     constructor(props) {
         super(props);
         this.state = ({
-
+            job: null
         });
+        this.params = this.props.navigation.state.params;
+    }
+
+    componentWillMount() {
+        const params = this.params;
+        const { jobId } = params;
+        this.props.dispatch({ type: 'SET_JOB_ID_TO_MARKED', id: jobId });
+        this.onIncreaseViews(jobId);
+    }
+
+    componentWillUnmount() {
+        this.props.dispatch({ type: 'SET_MARKED', isMarked: false });
+        this.props.dispatch({ type: 'SET_JOB_ID_TO_MARKED', id: '' });
+    }
+
+    async onIncreaseViews(jobId) {
+        // console.log(jobId);
+        try {
+            let res = await increaseViewOfJob(jobId);
+            res = await res.json();
+            if (res.success) {
+                this.onGetJobData(jobId);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async onGetJobData(jobId) {
+        try {
+            let res = await getJobById(jobId);
+            res = await res.json();
+            this.state.job = res;
+            this.setState(this.state);
+
+            this.onSetMarkedJob(res);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    onGetUserIdentityId = () => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userToken = await AsyncStorage.getItem('userToken');
+                if (userToken) {
+                    getUserIdentity(userToken)
+                        .then(res => res.json())
+                        .then(resJson => {
+                            if (resJson.userIdentity) {
+                                const userId = resJson.userIdentity.id;
+                                resolve(userId);
+                            } else {
+                                reject(null);
+                            }
+                        })
+                        .catch(err => reject(err));
+                } else {
+                    reject(null);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    async onSetMarkedJob(res) {
+        const userId = await this.onGetUserIdentityId();
+        if (userId) {
+            const isMarked = res.markedUsers.includes(userId);
+            this.props.dispatch({ type: 'SET_MARKED', isMarked });
+        }
     }
 
     render() {
         const { navigate } = this.props.navigation;
+        const { job } = this.state;
         // const { } = this.props;
+        if (job === null) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        }
+        const jobExtend = job.jobExtend;
+        let genderRequire = jobExtend.genderRequirement;
+        switch (genderRequire) {
+            case 'F': {
+                genderRequire = 'Nữ';
+                break;
+            }
+            case 'NR': {
+                genderRequire = 'Không yêu cầu';
+                break;
+            }
+            case 'M': {
+                genderRequire = 'Nam';
+                break;
+            }
+            default: break;
+        }
         return (
             <ScrollView
                 style={styles.scrollView}
@@ -35,7 +150,7 @@ class Job extends Component {
                                 size={fontScale(14)}
                                 name={'visibility'}
                             />
-                            <Text style={smallText}> 1000</Text>
+                            <Text style={smallText}> {job.views}</Text>
                         </View>
                         <View style={styles.brandContainer} >
                             <View style={styles.brandImageContainer}>
@@ -45,8 +160,8 @@ class Job extends Component {
                                 />
                             </View>
                             <View style={styles.brandContentContainer}>
-                                <Text style={titleBoldText}>Nhân viên dọn nhà</Text>
-                                <Text style={baseText}>Công ty XANH SẠCH ĐẸP</Text>
+                                <Text style={titleBoldText}>{job.jobName}</Text>
+                                <Text style={baseText}>{job.user.company.companyName}</Text>
                             </View>
                         </View>
                         <View style={styles.totalViewContainer}>
@@ -74,14 +189,14 @@ class Job extends Component {
                                     size={fontScale(14)}
                                     name={'event'}
                                 />
-                                <Text style={smallText}> Hạn đăng ký: 20/10/2017</Text>
+                                <Text style={smallText}> Hạn đăng ký: {formatDate(new Date(jobExtend.deadline))}</Text>
                             </View>
                             <View style={styles.baseInfoSectionContainer}>
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'playlist-add-check'}
                                 />
-                                <Text style={smallText}> Đã đăng ký: 50/100</Text>
+                                <Text style={smallText}> Đã đăng ký: {}</Text>
                             </View>
                         </View>
                         <View style={styles.baseInfoContainer}>
@@ -90,14 +205,14 @@ class Job extends Component {
                                     size={fontScale(14)}
                                     name={'attach-money'}
                                 />
-                                <Text style={smallText}> Mức lương: 7-10 triệ</Text>
+                                <Text style={smallText}> Mức lương: {jobExtend.salary}</Text>
                             </View>
                             <View style={styles.baseInfoSectionContainer}>
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'location-on'}
                                 />
-                                <Text style={smallText}> Địa điểm: TP. Hồ Chí Minh</Text>
+                                <Text style={smallText}> Địa điểm: {job.city.province.provinceName}</Text>
                             </View>
                         </View>
                         <View style={styles.baseInfoContainer}>
@@ -106,14 +221,14 @@ class Job extends Component {
                                     size={fontScale(14)}
                                     name={'equalizer'}
                                 />
-                                <Text style={smallText}> Kinh nghiệm: Dưới 1 năm</Text>
+                                <Text style={smallText}> Kinh nghiệm: {jobExtend.experience}</Text>
                             </View>
                             <View style={styles.baseInfoSectionContainer}>
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'business-center'}
                                 />
-                                <Text style={smallText}> Chức vụ: Nhân viên</Text>
+                                <Text style={smallText}> Chức vụ: {jobExtend.position}</Text>
                             </View>
                         </View>
                         <View style={[styles.baseInfoContainer, { flex: 1 }]}>
@@ -122,14 +237,14 @@ class Job extends Component {
                                     size={fontScale(14)}
                                     name={'school'}
                                 />
-                                <Text style={smallText}> Yêu cầu bằng cấp: Đại học</Text>
+                                <Text style={smallText}> Yêu cầu bằng cấp: {jobExtend.graduation}</Text>
                             </View>
                             <View style={styles.baseInfoSectionContainer}>
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'laptop-mac'}
                                 />
-                                <Text style={smallText}> Hình thức làm việc: Chính thức</Text>
+                                <Text style={smallText}> Hình thức làm việc: {jobExtend.workType}</Text>
                             </View>
                         </View>
                         <View style={styles.baseInfoContainer}>
@@ -138,53 +253,43 @@ class Job extends Component {
                                     size={fontScale(14)}
                                     name={'account-circle'}
                                 />
-                                <Text style={smallText}> Số lượng: 100</Text>
+                                <Text style={smallText}> Số lượng: {jobExtend.amount}</Text>
                             </View>
                             <View style={styles.baseInfoSectionContainer}>
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'wc'}
                                 />
-                                <Text style={smallText}> Yêu cầu giới tính: Không</Text>
+                                <Text style={smallText}> Yêu cầu giới tính: {genderRequire}</Text>
                             </View>
                         </View>
                     </View>
                     <Panel title="Mô tả">
-                        <Text style={baseText}>
-                            - Tư vấn khách hàng về các sản phẩm dự án của công ty.
-                            - Hướng dẫn khách hàng tham quan các dự án (Công ty có xe ôtô đưa đón)
-                            - Tìm kiếm khai thác và chăm sóc khách hàng tiềm năng.
-                            - Công việc cụ thể sẽ được hướng dẫn chi tiết khi vào làm việc.
-                        </Text>
+                        {
+                            splitStr(jobExtend.description, '\n').map((item, index) =>
+                                <Text key={index} style={baseText}>{item}</Text>)
+                        }
                     </Panel>
 
                     <Panel title="Yêu cầu công việc">
-                        <Text style={baseText}>
-                            - Chăm chỉ, nhiệt tình, ham học hỏi, có tinh thần cầu tiến.
-                        - Có laptop.
-                        - Kỹ năng đàm phán giao tiếp tốt
-                        - Có kỹ năng làm việc theo nhóm và độc lập
-                        - Ưu tiên những ứng viên có kinh nghiệm trong lĩnh vực bất động sản, Kinh doanh, CSKH,Telesale, Chuyên viên tư vấn.
-                        </Text>
+                        {
+                            splitStr(jobExtend.requirement, '\n').map((item, index) =>
+                                <Text key={index} style={baseText}>{item}</Text>)
+                        }
                     </Panel>
 
                     <Panel title="Quyền lợi">
-                        <Text style={baseText}>
-                            - Lương căn bản: 6.500.000đ triệu + Hoa Hồng từ 15tr đến 30tr/ sản phẩm + Thưởng nóng => Thu nhập hơn 30 triệu / tháng
-                        - Chế độ thưởng rất hấp dẫn theo Super sale, đặt cọc nhanh nhất, kí hợp đồng nhanh nhất .
-                        - Hưởng đầy đủ quyền lợi BHXH, BHYT, BHTN theo quy định.
-                        - Các chương trình du lịch nghỉ dưỡng, Team building thú vị hấp dẫn.
-                        - Tham gia các khóa huấn luyện đào tạo kỹ năng giao tiếp.
-                        - Môi trường làm việc năng động, chuyên nghiệp và nhiều cơ hội thăng tiến.
-                        - Sản Phẩm cực kì hot nhất thị trường, dễ bán.
-                        </Text>
+                        {
+                            splitStr(jobExtend.benefit, '\n').map((item, index) =>
+                                <Text key={index} style={baseText}>{item}</Text>)
+                        }
                     </Panel>
 
                     <Panel title="Thông tin liên hệ">
-                        <Text style={baseText}>
-                            - Người liên hệ: a Dũng
-                        - Địa chỉ liên hệ: Lê Văn Việt, Quận 9, TP. Hồ chí Minh
-                        </Text>
+                        {
+                            splitStr(jobExtend.contact, '\n').map((item, index) =>
+                                <Text key={index} style={baseText}>{item}</Text>)
+                        }
                     </Panel>
                 </View>
             </ScrollView >
@@ -280,7 +385,9 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state) {
-    return { lang: state.lang };
+    return {
+        lang: state.lang
+    };
 }
 
 export default connect(mapStateToProps)(Job);

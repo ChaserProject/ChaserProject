@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     View, Text, StatusBar, TextInput, StyleSheet, Image,
-    TouchableOpacity
+    TouchableOpacity, Alert, AsyncStorage
 } from 'react-native';
 import { connect } from 'react-redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -9,8 +9,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Color from '../../content/color/Color';
 import LoginBackGround3 from '../../content/images/LoginBackGround3.jpg';
 import Logo from '../../content/images/Logo.png';
-import { width, height, fontScale, horizontalScale, verticalScale } from '../../utillities/Scale';
-import { Languages } from '../../content/languages/Languages';
+import {
+    width, height, fontScale,
+    horizontalScale, verticalScale
+} from '../../utillities/Scale';
+import {
+    Languages
+} from '../../content/languages/Languages';
 
 
 class Login extends Component {
@@ -22,10 +27,56 @@ class Login extends Component {
         };
     }
 
+    componentDidMount() {
+
+    }
+
+    onLogin = async () => {
+        try {
+            const { password, user } = this.state;
+            if (password === '' && user === '') {
+                return Alert.alert(
+                    'Thông báo',
+                    'Vui lòng nhập đầy đủ tài khoản và mật khẩu!',
+                    [
+                        { text: 'OK' },
+                    ],
+                    { cancelable: false }
+                );
+            }
+            const res = await fetch('http://192.168.1.100:3000/service/user/login', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userName: this.state.user,
+                    passwordHash: this.state.password
+                })
+            });
+            const resJson = await res.json();
+            // console.log(resJson);
+            if (resJson.success) {
+                await AsyncStorage.setItem('userToken', JSON.stringify(resJson.token));
+                this.props.navigation.goBack();
+            } else {
+                Alert.alert(
+                    'Thông báo',
+                    'Tài khoản hoặc mật khẩu không chính xác!',
+                    [
+                        { text: 'Quay lại', style: 'cancel' },
+                    ]
+                );
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     render() {
         // const { container } = CommonStyle;
         const { white } = Color;
-        const { lang } = this.props;
         const { input, backgroundImage, inputGroup, btnBottomText,
             bottomSection, icon, btnLoginText, btnLogin, logoImage,
             logoSection, formLoginSection
@@ -37,7 +88,6 @@ class Login extends Component {
                     barStyle='light-content'
                 /* translucent */
                 />
-                <Text style={{ display: 'none' }}>{lang}</Text>
                 <View style={logoSection}>
                     <Image source={Logo} style={logoImage} />
                 </View>
@@ -54,7 +104,7 @@ class Login extends Component {
                             value={this.state.user}
                             maxLength={50}
                             underlineColorAndroid='transparent'
-                            placeholder={Languages.EmailOrPhone}
+                            placeholder={Languages.PhoneNumber}
                             placeholderTextColor={white}
                             selectionColor={white}
                         />
@@ -79,7 +129,7 @@ class Login extends Component {
                     </View>
                     <TouchableOpacity
                         style={btnLogin}
-                        onPress={() => navigate('Home')}
+                        onPress={this.onLogin}
                     >
                         <Text style={btnLoginText}>
                             {Languages.Login}
