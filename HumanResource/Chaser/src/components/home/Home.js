@@ -21,7 +21,7 @@ class HomeIndex extends Component {
         super(props);
         this.state = ({
             language: 'vn',
-            imgArrs: [Concert, HouseWork, Sell, Security, PGPB, FaceModel]
+            imgArrs: [Security, Sell, Concert, HouseWork , PGPB, FaceModel]
         });
     }
 
@@ -47,7 +47,7 @@ class HomeIndex extends Component {
                 }}
             >
                 <Image
-                    source={this.state.imgArrs[item.key]} style={{ width: 100, height: 100 }}
+                    source={this.state.imgArrs[item.key -1]} style={{ width: 100, height: 100 }}
                 />
                 <Text style={{ color: item.color, fontWeight: 'bold', fontSize: 14 }}>
                     {item.title}

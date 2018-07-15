@@ -1,6 +1,7 @@
+import { server_host } from './api_config';
 
 const getJobsByJobTypeOrderId = (orderId) => {
-    return fetch(`http://192.168.135.1:3000/service/job/get_job_by_jobtype_orderid/${orderId}`, {
+    return fetch(`${server_host}/service/job/get_job_by_jobtype_orderid/${orderId}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -10,7 +11,7 @@ const getJobsByJobTypeOrderId = (orderId) => {
 };
 
 const increaseViewOfJob = (jobId) => {
-    return fetch(`http://192.168.135.1:3000/service/job/increase_views/${jobId}`, {
+    return fetch(`${server_host}/service/job/increase_views/${jobId}`, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -20,7 +21,7 @@ const increaseViewOfJob = (jobId) => {
 };
 
 const getJobById = (id) => {
-    return fetch(`http://192.168.135.1:3000/service/job/get_job_by_id/${id}`, {
+    return fetch(`${server_host}/service/job/get_job_by_id/${id}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -30,7 +31,7 @@ const getJobById = (id) => {
 };
 
 const getMarkedJobsOfUserByUserId = (id) => {
-    return fetch(`http://192.168.135.1:3000/service/user/get_marked_jobs_of_user_by_user_id/${id}`, {
+    return fetch(`${server_host}/service/user/get_marked_jobs_of_user_by_user_id/${id}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -44,7 +45,7 @@ const unMarkJob = (userId, jobId) => {
         userId,
         jobId
     };
-    return fetch('http://192.168.135.1:3000/service/job/un_mark_job', {
+    return fetch(`${server_host}/service/job/un_mark_job`, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -59,7 +60,7 @@ const markJob = (userId, jobId) => {
         userId,
         jobId
     };
-    return fetch('http://192.168.135.1:3000/service/job/mark_job', {
+    return fetch(`${server_host}/service/job/mark_job`, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',

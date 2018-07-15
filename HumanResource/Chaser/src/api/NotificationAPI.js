@@ -1,5 +1,5 @@
 const getNotificationByUserId = (userId) => {
-    return fetch(`http://192.168.135.1:3000/service/notification/get_notification_by_user_id/${userId}`, {
+    return fetch(`${server_host}/service/notification/get_notification_by_user_id/${userId}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -9,7 +9,7 @@ const getNotificationByUserId = (userId) => {
 };
 
 const readNotification = (notiId, userId) => {
-    return fetch(`http://192.168.135.1:3000/service/notification/read_notification/${notiId}`, {
+    return fetch(`${server_host}/service/notification/read_notification/${notiId}`, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',

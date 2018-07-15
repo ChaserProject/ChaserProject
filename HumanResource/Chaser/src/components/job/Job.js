@@ -103,11 +103,14 @@ class Job extends Component {
     }
 
     async onSetMarkedJob(res) {
-        const userId = await this.onGetUserIdentityId();
-        if (userId) {
+        const userId = this.onGetUserIdentityId()
+        .then(userId=>{
             const isMarked = res.markedUsers.includes(userId);
             this.props.dispatch({ type: 'SET_MARKED', isMarked });
-        }
+        })
+        .catch(err=>{
+            console.log(err);
+        });
     }
 
     render() {

@@ -31,6 +31,7 @@ class Profile extends Component {
     // }
     render() {
         // const { lang } = this.props;
+        const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
                 <View style={styles.topSection}>
@@ -64,12 +65,13 @@ class Profile extends Component {
                                     numberOfLines={1}
                                     ellipsizeMode={'tail'}
                                     style={smallText}
-                                >Cai Lay, Tien Giang</Text>
+                                >Cai Lậy, Tiền Giang</Text>
                             </View>
                         </View>
                         <View style={styles.btnEditContainer}>
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 style={styles.btnEdit}
+                                onPress={()=>navigate('UserInfoEditingScreen')}
                             >
                                 <MaterialIcons
                                     size={fontScale(14)}
@@ -77,26 +79,26 @@ class Profile extends Component {
                                     style={{ color: white }}
                                 />
                                 <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Edit profile</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                     </View>
                 </View >
                 <View style={styles.middleSection}>
                     <View style={styles.buttonGroupContainer}>
                         <View style={styles.leftGroupContainer}>
-                            <TouchableOpacity style={styles.btnGroup}>
+                            <TouchableOpacity style={styles.btnGroup} onPress={()=>navigate('UserPhotoScreen')}>
                                 <Text style={[styles.txtButtonGroup, baseText]}>Photo</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.divisionLine1} />
                         <View style={styles.middleGroupContainer}>
-                            <TouchableOpacity style={styles.btnGroup}>
+                            <TouchableOpacity style={styles.btnGroup} onPress={()=>navigate('UserInfoEditingScreen')}>
                                 <Text style={[styles.txtButtonGroup, baseText]}>Information</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.divisionLine2} />
                         <View style={styles.rightGroupContainer}>
-                            <TouchableOpacity style={styles.btnGroup}>
+                            <TouchableOpacity style={styles.btnGroup} onPress={()=>navigate('UserMessageScreen')}>
                                 <Text style={[styles.txtButtonGroup, baseText]}>Message</Text>
                             </TouchableOpacity>
                         </View>
@@ -107,8 +109,24 @@ class Profile extends Component {
                         <View style={styles.bottomItem}>
                             <MaterialIcons
                                 size={fontScale(18)}
-                                name={'email'}
+                                name={'cake'}
                                 style={styles.bottomIcon}
+                            />
+                            <Text style={baseText}> 2/2/2000</Text>
+                        </View>
+                        <View style={styles.bottomItem}>
+                            <MaterialIcons
+                                size={fontScale(18)}
+                                name={'school'}
+                                style={styles.bottomIcon}
+                            />
+                            <Text style={baseText}> Đại học SPKT TPHCM</Text>
+                        </View>
+                        <View style={styles.bottomItem}>
+                            <MaterialIcons
+                                size={fontScale(18)}
+                                name={'email'}
+                                style={[styles.bottomIcon,{marginTop:verticalScale(2)}]}
                             />
                             <Text style={baseText}> nguyendung300694@gmail.com</Text>
                         </View>

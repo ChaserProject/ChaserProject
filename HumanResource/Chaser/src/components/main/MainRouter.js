@@ -14,6 +14,7 @@ import Job from '../job/Job';
 import JobTopBarTitle from '../job/JobTopBarTitle';
 import JobTopBarRight from '../job/JobTopBarRight';
 import BadgeTabIcon from '../badge/BadgeTabIcon';
+import ProfileRouter from '../profile/ProfileRouter';
 
 const { white, brownBlack, brownGray, black } = Color;
 
@@ -97,7 +98,7 @@ export const TabbarRouter = StackNavigator({
         })
     },
     ProfileScreen: {
-        screen: Profile,
+        screen: ProfileRouter,
         navigationOptions: {
             headerStyle: {
                 display: 'none'
