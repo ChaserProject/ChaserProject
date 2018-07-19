@@ -15,6 +15,8 @@ import JobTopBarTitle from '../job/JobTopBarTitle';
 import JobTopBarRight from '../job/JobTopBarRight';
 import BadgeTabIcon from '../badge/BadgeTabIcon';
 import ProfileRouter from '../profile/ProfileRouter';
+import UserJoinedJobFilter from '../users_joined_job_filter/UserJoinedJobFilter';
+
 
 const { white, brownBlack, brownGray, black } = Color;
 
@@ -97,6 +99,23 @@ export const TabbarRouter = StackNavigator({
             headerTintColor: white
         })
     },
+    UserJoinedJobFilterSreen: {
+        screen: UserJoinedJobFilter,
+        navigationOptions: ({ navigation }) => ({
+            headerTitle:'Người tham gia',
+            headerStyle: {
+                backgroundColor: black,
+                shadowColor: black,
+                shadowOpacity: 1,
+                shadowRadius: 0,
+                shadowOffset: {
+                    height: 1,
+                    width: 0
+                },
+            },
+            headerTintColor: white
+        })
+    },
     ProfileScreen: {
         screen: ProfileRouter,
         navigationOptions: {
@@ -107,11 +126,11 @@ export const TabbarRouter = StackNavigator({
     },
     LoginSreen: {
         screen: LoginRouter,
-        navigationOptions: {
+        navigationOptions: ({navigation})=>({
             headerStyle: {
                 display: 'none'
             }
-        }
+        })
     }
 }, {
         initialRouteName: 'TabbarScreen'

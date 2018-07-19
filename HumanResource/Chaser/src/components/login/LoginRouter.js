@@ -15,7 +15,7 @@ const { white } = Color;
 const LoginRouter = StackNavigator({
     Login: {
         screen: Login,
-        navigationOptions: () => ({
+        navigationOptions: ({navigation}) => ({
             headerStyle: {
                 display: 'none'
             }

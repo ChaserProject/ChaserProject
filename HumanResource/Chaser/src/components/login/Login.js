@@ -16,7 +16,12 @@ import {
 import {
     Languages
 } from '../../content/languages/Languages';
-
+import {
+    server_host
+} from '../../api/api_config';
+import {
+    tokenName
+} from '../../utillities//UserIdentity';
 
 class Login extends Component {
     constructor(props) {
@@ -44,7 +49,7 @@ class Login extends Component {
                     { cancelable: false }
                 );
             }
-            const res = await fetch('http://192.168.1.100:3000/service/user/login', {
+            const res = await fetch(`${server_host}/service/user/login`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -58,8 +63,9 @@ class Login extends Component {
             const resJson = await res.json();
             // console.log(resJson);
             if (resJson.success) {
-                await AsyncStorage.setItem('userToken', JSON.stringify(resJson.token));
-                this.props.navigation.goBack();
+                await AsyncStorage.setItem(tokenName, JSON.stringify(resJson.token));
+                this.props.dispatch({ type: 'SET_TOKEN' });
+                this.props.navigation.goBack(null);
             } else {
                 Alert.alert(
                     'Thông báo',

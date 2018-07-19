@@ -1,3 +1,8 @@
+import {
+    server_host
+} from './api_config';
+
+
 const getNotificationByUserId = (userId) => {
     return fetch(`${server_host}/service/notification/get_notification_by_user_id/${userId}`, {
         method: 'GET',

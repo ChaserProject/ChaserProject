@@ -13,7 +13,8 @@ import Panel from '../../components/panel/Panel';
 import CommonStyle from '../../content/styles/CommonStyle';
 import {
     increaseViewOfJob,
-    getJobById
+    getJobById,
+    joinToJob
 } from '../../api/JobAPI';
 import {
     getUserIdentity
@@ -22,6 +23,12 @@ import {
     formatDate,
     splitStr
 } from '../../utillities/Utils';
+import {
+    onGetUserIdentityId,
+    onGetUserIdentityRole,
+    adminRoleName,
+    employerRoleName
+} from '../../utillities/UserIdentity';
 
 const {
     white, gray2, black, gray4, blue5, whiteBlue, brownLightGray
@@ -34,7 +41,10 @@ class Job extends Component {
     constructor(props) {
         super(props);
         this.state = ({
-            job: null
+            job: null,
+            joinDisplay: 'flex',
+            unJoinDisplay: 'none',
+            filterDisplay: 'none'
         });
         this.params = this.props.navigation.state.params;
     }
@@ -44,6 +54,29 @@ class Job extends Component {
         const { jobId } = params;
         this.props.dispatch({ type: 'SET_JOB_ID_TO_MARKED', id: jobId });
         this.onIncreaseViews(jobId);
+        this.onDisplayButtonByRole();
+    }
+
+    onDisplayButtonByRole = ()=>{
+        try {
+            onGetUserIdentityRole()
+                .then(role=>{
+                    if(role && (role === adminRoleName || role === employerRoleName )){
+                        this.state.filterDisplay = 'flex';
+                        this.state.joinDisplay = 'none';
+                        this.setState(this.state);
+                    }else {
+                        this.state.filterDisplay = 'none';
+                        this.state.joinDisplay = 'flex';
+                        this.setState(this.state);
+                    }
+                })
+                .catch(err=>{
+                    console.log(err);
+                });
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     componentWillUnmount() {
@@ -77,33 +110,64 @@ class Job extends Component {
         }
     }
 
-    onGetUserIdentityId = () => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const userToken = await AsyncStorage.getItem('userToken');
-                if (userToken) {
-                    getUserIdentity(userToken)
-                        .then(res => res.json())
-                        .then(resJson => {
-                            if (resJson.userIdentity) {
-                                const userId = resJson.userIdentity.id;
-                                resolve(userId);
-                            } else {
-                                reject(null);
-                            }
-                        })
-                        .catch(err => reject(err));
-                } else {
-                    reject(null);
+    // onGetUserIdentityId = () => {
+    //     return new Promise(async (resolve, reject) => {
+    //         try {
+    //             const userToken = await AsyncStorage.getItem('userToken');
+    //             if (userToken) {
+    //                 getUserIdentity(userToken)
+    //                     .then(res => res.json())
+    //                     .then(resJson => {
+    //                         if (resJson.userIdentity) {
+    //                             const userId = resJson.userIdentity.id;
+    //                             resolve(userId);
+    //                         } else {
+    //                             reject(null);
+    //                         }
+    //                     })
+    //                     .catch(err => reject(err));
+    //             } else {
+    //                 reject(null);
+    //             }
+    //         } catch (err) {
+    //             reject(err);
+    //         }
+    //     });
+    // }
+
+    onJoinToJob = async () => {
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            const { navigate } = this.props.navigation;
+            const job = this.state.job;
+            if (userToken) {
+                const userId = await onGetUserIdentityId();
+                const params = this.params;
+                const { jobId } = params;
+                if (userId && jobId) {  
+                    joinToJob(jobId,userId)
+                    .then(async (result)=>{
+                        const res = await result.json();
+                        if(res.success){
+                            this.state.joinDisplay = 'none';
+                            this.state.unJoinDisplay= 'flex';
+                            this.setState(this.state);
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    });
                 }
-            } catch (err) {
-                reject(err);
+            } else {
+                navigate('LoginSreen');
             }
-        });
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     async onSetMarkedJob(res) {
-        const userId = this.onGetUserIdentityId()
+        const userId = onGetUserIdentityId()
         .then(userId=>{
             const isMarked = res.markedUsers.includes(userId);
             this.props.dispatch({ type: 'SET_MARKED', isMarked });
@@ -115,7 +179,8 @@ class Job extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const { job } = this.state;
+        const { job,joinDisplay,unJoinDisplay, filterDisplay } = this.state;
+        const { jobId } = this.params;
         // const { } = this.props;
         if (job === null) {
             return (
@@ -176,13 +241,34 @@ class Job extends Component {
                                 />
                                 <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Bình luận</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.btnJoin]}>
+                            <TouchableOpacity style={[styles.btnJoin,{display:joinDisplay}]}
+                                onPress={this.onJoinToJob}
+                            >
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'exit-to-app'}
                                     style={{ color: white }}
                                 />
                                 <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Tham gia</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.btnJoin,{display:unJoinDisplay}]}>
+                                <MaterialIcons
+                                    size={fontScale(14)}
+                                    name={'backspace'}
+                                    style={{ color: white }}
+                                />
+                                <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Hủy tham gia</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={[styles.btnJoin,{display:filterDisplay}]}
+                                onPress={()=>navigate('UserJoinedJobFilterSreen', { jobId: jobId })}
+                            >
+                                <MaterialIcons
+                                    size={fontScale(14)}
+                                    name={'format-list-numbered'}
+                                    style={{ color: white }}
+                                />
+                                <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Lọc</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.divisionLine} />
@@ -389,7 +475,7 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
     return {
-        lang: state.lang
+        lang: state.lang, hasToken: state.hasToken
     };
 }
 

@@ -5,6 +5,7 @@ import BadgeCountReducer from '../reducer/BadgeCountReducer';
 import {
     JobIdToMarkReducer, MarkJobReducer, MarkedJobChangeReducer
 } from '../reducer/JobTopBarRightReducer';
+import TokenReducer from '../reducer/TokenReducer';
 
 const reducer = combineReducers({
     lang: LangReducer,
@@ -12,7 +13,8 @@ const reducer = combineReducers({
     isMarked: MarkJobReducer,
     jobIdToMark: JobIdToMarkReducer,
     isMarkedJobChange: MarkedJobChangeReducer,
-    badgeCount: BadgeCountReducer
+    badgeCount: BadgeCountReducer,
+    hasToken : TokenReducer
 });
 
 const store = createStore(reducer);

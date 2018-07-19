@@ -11,8 +11,8 @@ class HomeTopBarTitle extends Component {
     render() {
         return (
             <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: white, fontSize: fontScale(20), fontWeight: 'bold' }}>Quận 9</Text>
-            </View>
+                <Text style={{ color: white, fontSize: fontScale(20), fontWeight: 'bold' }}></Text>
+            </View>   
         );
     }
 }

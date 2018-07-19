@@ -1,4 +1,6 @@
-import { server_host } from './api_config';
+import {
+    server_host
+} from './api_config';
 
 const getJobsByJobTypeOrderId = (orderId) => {
     return fetch(`${server_host}/service/job/get_job_by_jobtype_orderid/${orderId}`, {
@@ -7,6 +9,20 @@ const getJobsByJobTypeOrderId = (orderId) => {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         }
+    });
+};
+
+const joinToJob = (jobId, userId) => {
+    const body = {
+        userId: userId
+    }
+    return fetch(`${server_host}/service/job/join_to_job/${jobId}`, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
     });
 };
 
@@ -22,6 +38,16 @@ const increaseViewOfJob = (jobId) => {
 
 const getJobById = (id) => {
     return fetch(`${server_host}/service/job/get_job_by_id/${id}`, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    });
+};
+
+const getJoinedUsers = (jobId, amount) => {
+    return fetch(`${server_host}/service/job/get_joined_users_by_amount/${jobId}/${amount}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -76,5 +102,7 @@ module.exports = {
     getJobById,
     getMarkedJobsOfUserByUserId,
     unMarkJob,
-    markJob
+    markJob,
+    joinToJob,
+    getJoinedUsers
 };

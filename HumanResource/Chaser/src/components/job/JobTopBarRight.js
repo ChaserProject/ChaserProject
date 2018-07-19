@@ -78,7 +78,8 @@ class JobTopBarRight extends Component {
     }
 
     render() {
-        const { isMarked } = this.props;
+        const { isMarked, navigation } = this.props;
+        const {navigate}=navigation;
         const color = isMarked ? yellow2 : white;
         return (
             <View
@@ -86,9 +87,10 @@ class JobTopBarRight extends Component {
                     alignSelf: 'center',
                     flex: 1,
                     justifyContent: 'center',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    flexDirection:'row'
                 }}
-            >
+            >   
                 <TouchableOpacity
                     style={{
                         padding: fontScale(10)

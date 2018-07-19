@@ -15,18 +15,58 @@ import {
     fontScale, horizontalScale, verticalScale
 } from '../../utillities/Scale';
 import CommonStyle from '../../content/styles/CommonStyle';
+import {
+    onGetUserIdentityId,
+    removeToken
+} from '../../utillities/UserIdentity';
 
 const { black2, white } = Color;
 const { baseText, titleText } = CommonStyle;
 class Menu extends Component {
+  
+    constructor(props){
+        super(props);
+        this.state = ({
+            signOutDisplay : 'none'
+        });
+    }
+
+    componentWillMount() {
+        this.onAuthorize();
+    }
+
+    onAuthorize = ()=>{
+        onGetUserIdentityId()
+            .then(userId=>{
+                if(userId){
+                    this.state.signOutDisplay = 'flex';
+                    this.setState(this.state);
+                }else{
+                    this.state.signOutDisplay = 'none';
+                    this.setState(this.state);
+                }
+            })
+            .catch(err=>{
+                console.log(err);
+            });
+    }
 
     click() {
         setLanguage('en');
         this.props.dispatch({ type: 'SET_ENGLISH_LANGUAGE' });
     }
 
+    onSignOut = ()=>{
+        removeToken();
+        // this.state.signOutDisplay = 'none';
+        // this.setState(this.state);
+        this.props.dispatch({ type: 'REMOVE_TOKEN' });
+    }
+
     render() {
         const { navigate } = this.props.navigation;
+        const { signOutDisplay } = this.state;
+        const { hasToken, lang } = this.props;
         return (
             <ScrollView
                 style={styles.container}
@@ -55,9 +95,7 @@ class Menu extends Component {
                     </Text>
                 </View>
                 <View style={styles.bottomSection}>
-                    <View
-                        style={styles.item}
-                    >
+                    <View style={[styles.item,{display:signOutDisplay}]}>
                         <MaterialIcons
                             name={'account-circle'}
                             size={horizontalScale(20)}
@@ -68,9 +106,25 @@ class Menu extends Component {
                                 style={[styles.textItem, titleText]}
                             >
                                 Thông tin cá nhân
-                        </Text>
+                            </Text>
                         </TouchableOpacity>
                     </View>
+                    <View style={[styles.item,{display:signOutDisplay}]}>
+                        <MaterialIcons
+                            name={'power-settings-new'}
+                            size={horizontalScale(20)}
+                            style={styles.icon}
+                        />
+                        <TouchableOpacity onPress={this.onSignOut}>
+                            <Text
+                                style={[styles.textItem, titleText]}
+                            >
+                                Đăng xuất
+                            </Text>
+                        </TouchableOpacity>
+                        <Text>{''+hasToken}</Text>
+                    </View>
+                    <Text style={{ display: 'flex' }}>{lang}</Text>
                 </View>
             </ScrollView >
         );
@@ -128,7 +182,7 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state) {
-    return { lang: state.lang };
+    return { lang: state.lang, hasToken: state.hasToken };
 }
 
 export default connect(mapStateToProps)(Menu);
