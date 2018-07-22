@@ -1,7 +1,6 @@
 
 const tokenReducer = (state = false, action) => {
-    if (action.type === 'SET_TOKEN') return true;
-    if (action.type === 'REMOVE_TOKEN') return false;
+    if (action.type === 'SET_TOKEN') return !state;
     return state;
 };
 

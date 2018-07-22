@@ -27,12 +27,21 @@ class Menu extends Component {
     constructor(props){
         super(props);
         this.state = ({
-            signOutDisplay : 'none'
+            signOutDisplay : 'none',
+            signInDisplay: 'flex',
+            userName: ''
         });
+        this.navigate = this.props.navigation.navigate;
     }
 
     componentWillMount() {
         this.onAuthorize();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot){
+        if(this.props.hasToken != prevProps.hasToken){
+            this.onAuthorize();
+        }
     }
 
     onAuthorize = ()=>{
@@ -40,15 +49,18 @@ class Menu extends Component {
             .then(userId=>{
                 if(userId){
                     this.state.signOutDisplay = 'flex';
+                    this.state.signInDisplay ='none';
                     this.setState(this.state);
                 }else{
                     this.state.signOutDisplay = 'none';
+                    this.state.signInDisplay ='flex';
                     this.setState(this.state);
                 }
             })
             .catch(err=>{
                 console.log(err);
             });
+        
     }
 
     click() {
@@ -59,13 +71,20 @@ class Menu extends Component {
     onSignOut = ()=>{
         removeToken();
         // this.state.signOutDisplay = 'none';
-        // this.setState(this.state);
-        this.props.dispatch({ type: 'REMOVE_TOKEN' });
+        //this.setState(this.state);
+        this.props.dispatch({ type: 'SET_TOKEN' });
+        this.state.signOutDisplay = 'none';
+        this.state.signInDisplay ='flex';
+        this.setState(this.state);
+    }
+
+    onSignIn = ()=>{
+        this.navigate('LoginSreen');
     }
 
     render() {
         const { navigate } = this.props.navigation;
-        const { signOutDisplay } = this.state;
+        const { signOutDisplay, signInDisplay, userName } = this.state;
         const { hasToken, lang } = this.props;
         return (
             <ScrollView
@@ -91,7 +110,7 @@ class Menu extends Component {
                         ellipsizeMode={'tail'}
                         numberOfLines={1}
                     >
-                        Nguyễn Hoàng Phúc
+                        {userName}
                     </Text>
                 </View>
                 <View style={styles.bottomSection}>
@@ -122,9 +141,21 @@ class Menu extends Component {
                                 Đăng xuất
                             </Text>
                         </TouchableOpacity>
-                        <Text>{''+hasToken}</Text>
                     </View>
-                    <Text style={{ display: 'flex' }}>{lang}</Text>
+                    <View style={[styles.item,{display: signInDisplay}]}>
+                        <MaterialIcons
+                            name={'exit-to-app'}
+                            size={horizontalScale(20)}
+                            style={styles.icon}
+                        />
+                        <TouchableOpacity onPress={this.onSignIn}>
+                            <Text
+                                style={[styles.textItem, titleText]}
+                            >
+                                Đăng nhập
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </ScrollView >
         );

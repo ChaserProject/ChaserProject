@@ -15,8 +15,13 @@ import { getNotificationByUserId, readNotification } from '../../api/Notificatio
 import { fontScale, horizontalScale, height } from '../../utillities/Scale';
 import CommonStyle from '../../content/styles/CommonStyle';
 import { formatDateAndTime } from '../../utillities/Utils';
+import{
+    onGetUserIdentityId,
+    onGetUserIdentityRole,
+    userRoleName
+} from '../../utillities/UserIdentity';
 
-const { white, gray2 } = Color;
+const { white, gray2, whiteBlue } = Color;
 const { baseText, smallText } = CommonStyle;
 
 class Notification extends Component {
@@ -31,9 +36,21 @@ class Notification extends Component {
         this.onGetNotification();
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.hasToken !== this.props.hasToken){
+            this.state.notifications = null;
+            this.setState(this.state);
+            this.onGetNotification();
+        }
+    }
+
     onGetNotification = async () => {
         try {
-            const userId = await this.onGetUserIdentityId();
+            const userId = await onGetUserIdentityId();
+            const userRole = await onGetUserIdentityRole();
+            if(userRole!=userRoleName){
+                return;
+            }
             let res = await getNotificationByUserId(userId);
             res = await res.json();
             this.state.notifications = res;
@@ -59,34 +76,9 @@ class Notification extends Component {
         dispatch({ type: 'SET_BADGE_COUNT', count: notiCount });
     }
 
-    onGetUserIdentityId = () => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const userToken = await AsyncStorage.getItem('userToken');
-                if (userToken) {
-                    getUserIdentity(userToken)
-                        .then(res => res.json())
-                        .then(resJson => {
-                            if (resJson.userIdentity) {
-                                const userId = resJson.userIdentity.id;
-                                resolve(userId);
-                            } else {
-                                reject(null);
-                            }
-                        })
-                        .catch(err => reject(err));
-                } else {
-                    reject(null);
-                }
-            } catch (err) {
-                reject(err);
-            }
-        });
-    }
-
     onNavigate = async (navigate, notification) => {
         try {
-            const userId = await this.onGetUserIdentityId();
+            const userId = await onGetUserIdentityId();
             let res = await readNotification(notification._id, userId);
             res = await res.json();
             if (res.success) {
@@ -157,15 +149,24 @@ class Notification extends Component {
     render() {
         const { navigate } = this.props.navigation;
         const { notifications } = this.state;
-        if (notifications === null) {
+        
+        if (!notifications || !notifications.length) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator />
                 </View>
             );
         }
+
+        let indicatorDisplay = 'flex';
+        if(notifications || notifications.length){
+            indicatorDisplay = 'none';
+        }
+
         return (
-            <View>
+            <View style={{ flex: 1, paddingVertical: 10, backgroundColor: whiteBlue}}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', display:indicatorDisplay }}>
+                    <ActivityIndicator />
+                </View>
                 <FlatList
                     style={{ backgroundColor: white }}
                     data={notifications}
@@ -179,7 +180,7 @@ class Notification extends Component {
 }
 
 function mapStateToProps(state) {
-    return { lang: state.lang };
+    return { lang: state.lang, hasToken: state.hasToken };
 }
 
 export default connect(mapStateToProps)(Notification);

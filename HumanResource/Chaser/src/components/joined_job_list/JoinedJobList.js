@@ -24,6 +24,11 @@ import {
     getMarkedJobsOfUserByUserId,
     unMarkJob
 } from '../../api/JobAPI';
+import {
+    onGetUserIdentityId,
+    onGetUserIdentityRole,
+    userRoleName
+} from '../../utillities/UserIdentity';
 
 const { white, gray2, black, gray4, blue5, whiteBlue, brownBlack, yellow2 } = Color;
 
@@ -43,36 +48,20 @@ class JoinedJobList extends Component {
         if (nextProps.isMarkedJobChange !== this.props.isMarkedJobChange) {
             this.onGetJoinedJobData();
         }
-    }
-
-    onGetUserIdentityId = () => {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const userToken = await AsyncStorage.getItem('userToken');
-                if (userToken) {
-                    getUserIdentity(userToken)
-                        .then(res => res.json())
-                        .then(resJson => {
-                            if (resJson.userIdentity) {
-                                const userId = resJson.userIdentity.id;
-                                resolve(userId);
-                            } else {
-                                reject(null);
-                            }
-                        })
-                        .catch(err => reject(err));
-                } else {
-                    reject(null);
-                }
-            } catch (err) {
-                reject(err);
-            }
-        });
+        if(nextProps.hasToken !== this.props.hasToken){
+            this.state.joinedJobs = null;
+            this.setState(this.state);
+            this.onGetJoinedJobData();
+        }
     }
 
     onGetJoinedJobData = async () => {
         try {
-            const userId = await this.onGetUserIdentityId();
+            const userId = await onGetUserIdentityId();
+            const userRole = await onGetUserIdentityRole();
+            if(userRole!=userRoleName){
+                return;
+            }
             let res = await getMarkedJobsOfUserByUserId(userId);
             res = await res.json();
             this.state.joinedJobs = res.markedJobs;
@@ -83,7 +72,7 @@ class JoinedJobList extends Component {
     }
 
     onUnMarkJob = async (jobId) => {
-        const userId = await this.onGetUserIdentityId();
+        const userId = await onGetUserIdentityId();
         let resUnMark = await unMarkJob(userId, jobId);
         resUnMark = await resUnMark.json();
         if (resUnMark.success) {
@@ -177,15 +166,28 @@ class JoinedJobList extends Component {
     render() {
         const { navigate } = this.props.navigation;
         const { joinedJobs } = this.state;
-        if (joinedJobs === null) {
+        if(!joinedJobs || !joinedJobs.length){
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator />
                 </View>
-            );
+            )
+        }
+        // if (joinedJobs === null || joinedJobs === []) {
+        //     return (
+        //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        //             <ActivityIndicator />
+        //         </View>
+        //     );
+        // }
+        let indicatorDisplay = 'flex';
+        if(joinedJobs || joinedJobs.length){
+            indicatorDisplay = 'none';
         }
         return (
-            <View style={{ flex: 1, paddingVertical: 10, backgroundColor: whiteBlue }}>
+            <View style={{ flex: 1, paddingVertical: 10, backgroundColor: whiteBlue}}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', display:indicatorDisplay }}>
+                    <ActivityIndicator />
+                </View>
                 <FlatList
                     style={{}}
                     data={joinedJobs}
@@ -201,7 +203,8 @@ class JoinedJobList extends Component {
 function mapStateToProps(state) {
     return {
         lang: state.lang,
-        isMarkedJobChange: state.isMarkedJobChange
+        isMarkedJobChange: state.isMarkedJobChange,
+        hasToken: state.hasToken
     };
 }
 

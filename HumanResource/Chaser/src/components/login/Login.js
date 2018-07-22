@@ -39,7 +39,7 @@ class Login extends Component {
     onLogin = async () => {
         try {
             const { password, user } = this.state;
-            if (password === '' && user === '') {
+            if (password === '' || user === '') {
                 return Alert.alert(
                     'Thông báo',
                     'Vui lòng nhập đầy đủ tài khoản và mật khẩu!',
@@ -64,7 +64,7 @@ class Login extends Component {
             // console.log(resJson);
             if (resJson.success) {
                 await AsyncStorage.setItem(tokenName, JSON.stringify(resJson.token));
-                this.props.dispatch({ type: 'SET_TOKEN' });
+                await this.props.dispatch({ type: 'SET_TOKEN' });
                 this.props.navigation.goBack(null);
             } else {
                 Alert.alert(
