@@ -28,7 +28,8 @@ class Notification extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            notifications: null
+            notifications: null,
+            userId: null
         };
     }
 
@@ -39,6 +40,7 @@ class Notification extends Component {
     componentWillReceiveProps(nextProps) {
         if(nextProps.hasToken !== this.props.hasToken){
             this.state.notifications = null;
+            this.state.userId = null;
             this.setState(this.state);
             this.onGetNotification();
         }
@@ -54,6 +56,7 @@ class Notification extends Component {
             let res = await getNotificationByUserId(userId);
             res = await res.json();
             this.state.notifications = res;
+            this.state.userId = userId;
             this.setState(this.state);
             this.onDispatch(res, userId);
         } catch (err) {
@@ -90,7 +93,17 @@ class Notification extends Component {
     }
 
     onRenderItem(notification, navigate) {
+        const { userId } = this.state;
+        const readByArr = notification.readBy;
+        let backgroundColor = gray2;
+        readByArr.forEach((item,index)=>{
+            if(item.readerId == userId){
+                backgroundColor = white;
+                return;
+            }
+        })
         return (<TouchableOpacity
+            style={{backgroundColor}}
             onPress={() => this.onNavigate(navigate, notification)}
         >
             <View
@@ -163,7 +176,7 @@ class Notification extends Component {
         }
 
         return (
-            <View style={{ flex: 1, paddingVertical: 10, backgroundColor: whiteBlue}}>
+            <View style={{ flex: 1, backgroundColor: whiteBlue}}>
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', display:indicatorDisplay }}>
                     <ActivityIndicator />
                 </View>

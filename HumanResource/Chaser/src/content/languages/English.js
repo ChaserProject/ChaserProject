@@ -2,7 +2,7 @@
 export default {
     hello: 'hello',
     Password: 'Password...',
-    PhoneNumber: 'Your Phone number...',
+    PhoneNumber: 'Your Account...',
     Login: 'Log in',
     CreateAccount: 'Create Account',
     NeedHelp: 'Need Help?',

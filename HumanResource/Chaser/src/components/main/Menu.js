@@ -19,6 +19,9 @@ import {
     onGetUserIdentityId,
     removeToken
 } from '../../utillities/UserIdentity';
+import {
+    getUserByUserId
+} from '../../api/UserAPI';
 
 const { black2, white } = Color;
 const { baseText, titleText } = CommonStyle;
@@ -29,7 +32,8 @@ class Menu extends Component {
         this.state = ({
             signOutDisplay : 'none',
             signInDisplay: 'flex',
-            userName: ''
+            userName: '',
+            userId: null
         });
         this.navigate = this.props.navigation.navigate;
     }
@@ -50,7 +54,19 @@ class Menu extends Component {
                 if(userId){
                     this.state.signOutDisplay = 'flex';
                     this.state.signInDisplay ='none';
+                    this.state.userId = userId;
                     this.setState(this.state);
+                    getUserByUserId(userId)
+                    .then(res=>res.json())
+                    .then(result=>{
+                        if(result){
+                            this.state.userName = `${result.firstName} ${result.lastName}`;
+                            this.setState(this.state);
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    });
                 }else{
                     this.state.signOutDisplay = 'none';
                     this.state.signInDisplay ='flex';
@@ -60,22 +76,27 @@ class Menu extends Component {
             .catch(err=>{
                 console.log(err);
             });
-        
     }
 
-    click() {
-        setLanguage('en');
-        this.props.dispatch({ type: 'SET_ENGLISH_LANGUAGE' });
-    }
+    // click() {
+    //     setLanguage('en');
+    //     this.props.dispatch({ type: 'SET_ENGLISH_LANGUAGE' });
+    // }
 
     onSignOut = ()=>{
         removeToken();
         // this.state.signOutDisplay = 'none';
         //this.setState(this.state);
-        this.props.dispatch({ type: 'SET_TOKEN' });
+        const {dispatch} = this.props;
+        const {navigate} = this.props.navigation;
+        dispatch({ type: 'SET_TOKEN' });
+        dispatch({ type: 'SET_BADGE_COUNT', count: 0 });
         this.state.signOutDisplay = 'none';
         this.state.signInDisplay ='flex';
+        this.state.userId = null;
+        this.state.userName = '';
         this.setState(this.state);
+        navigate('DrawerClose');
     }
 
     onSignIn = ()=>{
@@ -84,7 +105,7 @@ class Menu extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-        const { signOutDisplay, signInDisplay, userName } = this.state;
+        const { signOutDisplay, signInDisplay, userName, userId } = this.state;
         const { hasToken, lang } = this.props;
         return (
             <ScrollView
@@ -106,7 +127,7 @@ class Menu extends Component {
                         style={styles.avatarImg}
                     />
                     <Text
-                        style={[styles.userName, baseText]}
+                        style={[styles.userName, titleText]}
                         ellipsizeMode={'tail'}
                         numberOfLines={1}
                     >
@@ -120,7 +141,7 @@ class Menu extends Component {
                             size={horizontalScale(20)}
                             style={styles.icon}
                         />
-                        <TouchableOpacity onPress={() => navigate('ProfileScreen')}>
+                        <TouchableOpacity onPress={() => navigate('ProfileScreen', { userId })}>
                             <Text
                                 style={[styles.textItem, titleText]}
                             >

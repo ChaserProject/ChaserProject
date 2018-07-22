@@ -16,7 +16,8 @@ import FaceModel from '../../content/images/FaceModel.png';
 import Sell from '../../content/images/Sell.png';
 
 import {
-    getJobsByJobTypeOrderId
+    getJobsByJobTypeOrderId,
+    getJobByMultiParams
 } from '../../api/JobAPI';
 
 import {
@@ -50,10 +51,24 @@ class JobList extends Component {
 
     onGetJobData = async (key) => {
         try {
-            let res = await getJobsByJobTypeOrderId(key);
-            res = await res.json();
-            this.state.jobs = res;
-            this.setState(this.state);
+            // let res = await getJobsByJobTypeOrderId(key);
+            // res = await res.json();
+            // this.state.jobs = res;
+            // this.setState(this.state);
+            const params = {
+                jobType:key, 
+                province: null, 
+                name: ''
+            };
+            getJobByMultiParams(params)
+                .then(rst => rst.json())
+                .then(res=>{
+                    this.state.jobs = res;
+                    this.setState(this.state);
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
         } catch (err) {
             console.log(err);
         }

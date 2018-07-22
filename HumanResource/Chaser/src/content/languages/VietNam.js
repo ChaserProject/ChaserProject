@@ -2,7 +2,7 @@
 export default {
     hello: 'xin chao',
     Password: 'Mật khẩu...',
-    PhoneNumber: 'Số điện thoại cuả bạn...',
+    PhoneNumber: 'Tài khoản cuả bạn...',
     Login: 'Đăng nhập',
     CreateAccount: 'Tạo tài khoản',
     NeedHelp: 'Cần trợ giúp?',

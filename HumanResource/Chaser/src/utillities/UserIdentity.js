@@ -38,7 +38,6 @@ const onGetUserIdentityRole = () => {
                 getUserIdentity(userToken)
                     .then(res => res.json())
                     .then(resJson => {
-                        console.log('res: ', resJson);
                         if (resJson.userIdentity) {
                             const userRole = resJson.userIdentity.role;
                             resolve(userRole);

@@ -110,31 +110,6 @@ class Job extends Component {
         }
     }
 
-    // onGetUserIdentityId = () => {
-    //     return new Promise(async (resolve, reject) => {
-    //         try {
-    //             const userToken = await AsyncStorage.getItem('userToken');
-    //             if (userToken) {
-    //                 getUserIdentity(userToken)
-    //                     .then(res => res.json())
-    //                     .then(resJson => {
-    //                         if (resJson.userIdentity) {
-    //                             const userId = resJson.userIdentity.id;
-    //                             resolve(userId);
-    //                         } else {
-    //                             reject(null);
-    //                         }
-    //                     })
-    //                     .catch(err => reject(err));
-    //             } else {
-    //                 reject(null);
-    //             }
-    //         } catch (err) {
-    //             reject(err);
-    //         }
-    //     });
-    // }
-
     onJoinToJob = async () => {
         try {
             const userToken = await AsyncStorage.getItem('userToken');

@@ -12,6 +12,17 @@ const getJobsByJobTypeOrderId = (orderId) => {
     });
 };
 
+const getJobByMultiParams = (params) => {
+    return fetch(`${server_host}/service/job/search_jobs_by_url_queries`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params) //body: {jobType, province, name}
+    });
+};
+
 const joinToJob = (jobId, userId) => {
     const body = {
         userId: userId
@@ -104,5 +115,6 @@ module.exports = {
     unMarkJob,
     markJob,
     joinToJob,
-    getJoinedUsers
+    getJoinedUsers,
+    getJobByMultiParams
 };

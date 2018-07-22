@@ -12,6 +12,12 @@ import {
 } from '../../../utillities/Scale';
 import Avatar from '../../../content/images/avatarsino.jpg';
 import InfoBackground from '../../../content/images/info_background.jpg';
+import {
+    getUserByUserId
+} from '../../../api/UserAPI';
+import {
+    formatDate
+} from '../../../utillities/Utils';
 
 const {
     white, gray2, black, gray4, blue5, brownLightGray,
@@ -20,14 +26,25 @@ const {
 const { baseText, smallText, baseBoldText } = CommonStyle;
 
 class UserInfo extends Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         comment: ''
-    //     };
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+            comment: ''
+        };
+        this.params = this.props.navigation.state.params;
+    }
+
+    componentWillMount() {
+        const {user} = this.params;
+        this.user = user;
+    }
+
     render() {
         // const { lang } = this.props;
+        if(!this.user){
+            return  (<View style={styles.container}/>)
+        }
+        const user = this.user;
         return (
             <View
                 style={styles.container}
@@ -40,23 +57,25 @@ class UserInfo extends Component {
                     />
                 </View>
                 <View style={styles.infoContainer}>
-                    <Text style={styles.userName}>Nguyễn Hoàng Phúc</Text>
-                    <View style={styles.inputGroup}>
+                    <Text style={styles.userName}>{`${user.firstName} ${user.lastName}`}</Text>
+                    <View style={[styles.inputGroup,{ display: user.city ? 'flex' : 'none' }]}>
                         <MaterialIcons
                                 name={'location-on'}
                                 size={fontScale(10)}
                                 style={styles.icon}
                         />
-                        <Text style={styles.address}>Cai Lậy, Tiền Giang</Text>
+                        <Text style={styles.address}>
+                            {user.city ? `${user.city.cityName}, ${user.city.province.provinceName}`  : ''}
+                        </Text>
                     </View>
                     <Text style={styles.horizontal_line} />
-                    <View style={[styles.inputExtendGroup]}>
+                    <View style={[styles.inputExtendGroup,{display: user.userExtend.birthday ? 'flex' : 'none'}]}>
                         <MaterialIcons
                                 name={'cake'}
                                 size={fontScale(13)}
                                 style={styles.icon_extend}
                         />
-                        <Text style={styles.text}>2/2/2000</Text>
+                        <Text style={styles.text}> {formatDate(new Date(user.userExtend.birthday))}</Text>
                     </View>
                     <View style={[styles.inputExtendGroup]}>
                         <MaterialIcons
@@ -64,31 +83,39 @@ class UserInfo extends Component {
                                 size={fontScale(13)}
                                 style={styles.icon_extend}
                         />
-                        <Text style={styles.text}>Nam</Text>
+                        <Text style={styles.text}> {user.userExtend.gender?'Nam':'Nữ'}</Text>
                     </View>
-                     <View style={[styles.inputExtendGroup]}>
+                     <View style={[styles.inputExtendGroup,{display: user.userExtend.hightSchool ? 'flex' : 'none'}]}>
                         <MaterialIcons
                                 name={'import-contacts'}
                                 size={fontScale(13)}
                                 style={styles.icon_extend}
                         />
-                        <Text style={styles.text}>THPT Cai Lậy</Text>
+                        <Text style={styles.text}> {user.userExtend.hightSchool}</Text>
                     </View>
-                    <View style={[styles.inputExtendGroup]}>
+                    <View style={[styles.inputExtendGroup,{display: user.userExtend.university ? 'flex' : 'none'}]}>
                         <MaterialIcons
                                 name={'school'}
                                 size={fontScale(13)}
                                 style={styles.icon_extend}
                         />
-                        <Text style={styles.text}>Đại học SPKT TPHCM</Text>
+                        <Text style={styles.text}> {user.userExtend.university}</Text>
                     </View>
-                    <View style={[styles.inputExtendGroup]}>
+                    <View style={[styles.inputExtendGroup,{display: user.email ? 'flex' : 'none'}]}>
                         <MaterialIcons
                                 name={'email'}
                                 size={fontScale(13)}
                                 style={[styles.icon_extend,{marginTop:0.6}]}
                         />
-                        <Text style={styles.text}>phucit@gmail.com</Text>
+                        <Text style={styles.text}> {user.email}</Text>
+                    </View>
+                    <View style={[styles.inputExtendGroup,{display: user.mobile ? 'flex' : 'none'}]}>
+                        <MaterialIcons
+                                name={'phone-iphone'}
+                                size={fontScale(13)}
+                                style={[styles.icon_extend,{marginTop:0.6}]}
+                        />
+                        <Text style={styles.text}> {user.mobile}</Text>
                     </View>
                 </View>
                 </Image>

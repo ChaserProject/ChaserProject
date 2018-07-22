@@ -15,6 +15,12 @@ import {
     width, height, verticalScale,
     fontScale, horizontalScale
 } from '../../utillities/Scale';
+import {
+    getUserByUserId
+} from '../../api/UserAPI';
+import {
+    formatDate
+} from '../../utillities/Utils'
 
 const {
     white, gray2, black, gray4, blue5, brownLightGray,
@@ -23,15 +29,41 @@ const {
 const { baseText, smallText, baseBoldText } = CommonStyle;
 
 class Profile extends Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         comment: ''
-    //     };
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+            comment: '',
+            user: null
+        };
+        this.params = this.props.navigation.state.params;
+    }
+
+    componentWillMount() {
+        this.onGetUserInfo();
+    }
+
+    onGetUserInfo=()=>{
+        const { userId } = this.params;
+        getUserByUserId(userId)
+            .then(res=>res.json())
+            .then(result=>{
+                this.state.user = result;
+                this.setState(this.state);
+            })
+            .catch(err=>{
+                console.log(err);
+            });
+    }
+
     render() {
         // const { lang } = this.props;
         const { navigate } = this.props.navigation;
+        const {user} = this.state;
+
+        if(!user){
+            return  (<View style={styles.container}/>)
+        }
+
         return (
             <View style={styles.container}>
                 <View style={styles.topSection}>
@@ -54,9 +86,9 @@ class Profile extends Component {
                                     numberOfLines={2}
                                     ellipsizeMode={'tail'}
                                     style={baseBoldText}
-                                >Nguyễn Hoàng Phúc</Text>
+                                >{`${user.firstName} ${user.lastName}`}</Text>
                             </View>
-                            <View style={styles.homeTownContainer}>
+                            <View style={[styles.homeTownContainer,{ display: user.city ? 'flex' : 'none' }]}>
                                 <MaterialIcons
                                     size={fontScale(11)}
                                     name={'location-on'}
@@ -65,7 +97,7 @@ class Profile extends Component {
                                     numberOfLines={1}
                                     ellipsizeMode={'tail'}
                                     style={smallText}
-                                >Cai Lậy, Tiền Giang</Text>
+                                >{user.city ? `${user.city.cityName}, ${user.city.province.provinceName}`  : ''}</Text>
                             </View>
                         </View>
                         <View style={styles.btnEditContainer}>
@@ -92,7 +124,7 @@ class Profile extends Component {
                         </View>
                         <View style={styles.divisionLine1} />
                         <View style={styles.middleGroupContainer}>
-                            <TouchableOpacity style={styles.btnGroup} onPress={()=>navigate('UserInfoEditingScreen')}>
+                            <TouchableOpacity style={styles.btnGroup} onPress={()=>navigate('UserInfoEditingScreen',{user})}>
                                 <Text style={[styles.txtButtonGroup, baseText]}>Information</Text>
                             </TouchableOpacity>
                         </View>
@@ -106,37 +138,37 @@ class Profile extends Component {
                 </View>
                 <View style={styles.bottomSection}>
                     <View style={styles.bottomContainer}>
-                        <View style={styles.bottomItem}>
+                        <View style={[styles.bottomItem,{display: user.userExtend.birthday ? 'flex' : 'none'}]}>
                             <MaterialIcons
                                 size={fontScale(18)}
                                 name={'cake'}
                                 style={styles.bottomIcon}
                             />
-                            <Text style={baseText}> 2/2/2000</Text>
+                            <Text style={baseText}> {formatDate(new Date(user.userExtend.birthday))}</Text>
                         </View>
-                        <View style={styles.bottomItem}>
+                        <View style={[styles.bottomItem,{display: user.userExtend.university ? 'flex' : 'none'}]}>
                             <MaterialIcons
                                 size={fontScale(18)}
                                 name={'school'}
                                 style={styles.bottomIcon}
                             />
-                            <Text style={baseText}> Đại học SPKT TPHCM</Text>
+                            <Text style={baseText}> {user.userExtend.university}</Text>
                         </View>
-                        <View style={styles.bottomItem}>
+                        <View style={[styles.bottomItem,{display: user.email ? 'flex' : 'none'}]}>
                             <MaterialIcons
                                 size={fontScale(18)}
                                 name={'email'}
                                 style={[styles.bottomIcon,{marginTop:verticalScale(2)}]}
                             />
-                            <Text style={baseText}> nguyendung300694@gmail.com</Text>
+                            <Text style={baseText}> {user.email}</Text>
                         </View>
-                        <View style={styles.bottomItem}>
+                        <View style={[styles.bottomItem,{display: user.mobile ? 'flex' : 'none'}]}>
                             <MaterialIcons
                                 size={fontScale(18)}
                                 name={'phone-iphone'}
                                 style={styles.bottomIcon}
                             />
-                            <Text style={baseText}> 01639460220</Text>
+                            <Text style={baseText}> {user.mobile}</Text>
                         </View>
                     </View>
                 </View>
