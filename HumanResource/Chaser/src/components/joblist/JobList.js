@@ -45,22 +45,17 @@ class JobList extends Component {
 
     componentWillMount() {
         const params = this.props.navigation.state.params;
-        const { key } = params;
-        this.onGetJobData(key);
+        const { multiParams } = params;
+        this.onGetJobData(multiParams);
     }
 
-    onGetJobData = async (key) => {
+    onGetJobData = async (multiParams) => {
         try {
             // let res = await getJobsByJobTypeOrderId(key);
             // res = await res.json();
             // this.state.jobs = res;
             // this.setState(this.state);
-            const params = {
-                jobType:key, 
-                province: null, 
-                name: ''
-            };
-            getJobByMultiParams(params)
+            getJobByMultiParams(multiParams)
                 .then(rst => rst.json())
                 .then(res=>{
                     this.state.jobs = res;

@@ -13,6 +13,7 @@ const getJobsByJobTypeOrderId = (orderId) => {
 };
 
 const getJobByMultiParams = (params) => {
+    console.log('params: ', params);
     return fetch(`${server_host}/service/job/search_jobs_by_url_queries`, {
         method: 'POST',
         headers: {
@@ -28,6 +29,20 @@ const joinToJob = (jobId, userId) => {
         userId: userId
     }
     return fetch(`${server_host}/service/job/join_to_job/${jobId}`, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+    });
+};
+
+const unJoinFromJob = (jobId, userId) => {
+    const body = {
+        userId: userId
+    }
+    return fetch(`${server_host}/service/job/un_join_from_job/${jobId}`, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -116,5 +131,6 @@ module.exports = {
     markJob,
     joinToJob,
     getJoinedUsers,
-    getJobByMultiParams
+    getJobByMultiParams,
+    unJoinFromJob
 };

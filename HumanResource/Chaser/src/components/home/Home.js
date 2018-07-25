@@ -36,7 +36,12 @@ class HomeIndex extends Component {
     }
 
     onRenderItem(item, navigate) {
-        return (<TouchableOpacity onPress={() => navigate('JobListSreen', { key: item.key })}>
+        const multiParams = {
+            jobType:item.key, 
+            province: this.props.provinceOrderId, 
+            name: this.props.homeSearchName
+        };
+        return (<TouchableOpacity onPress={() => navigate('JobListSreen', { key: item.key, multiParams })}>
             <View
                 style={{
                     width: width / 2,
@@ -80,7 +85,11 @@ class HomeIndex extends Component {
 }
 
 function mapStateToProps(state) {
-    return { lang: state.lang };
+    return { 
+        lang: state.lang, 
+        provinceOrderId: state.provinceOrderId ,
+        homeSearchName: state.homeSearchName
+    };
 }
 
 export default connect(mapStateToProps)(HomeIndex);

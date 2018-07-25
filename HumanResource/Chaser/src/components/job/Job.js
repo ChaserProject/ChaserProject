@@ -14,7 +14,8 @@ import CommonStyle from '../../content/styles/CommonStyle';
 import {
     increaseViewOfJob,
     getJobById,
-    joinToJob
+    joinToJob,
+    unJoinFromJob
 } from '../../api/JobAPI';
 import {
     getUserIdentity
@@ -27,7 +28,8 @@ import {
     onGetUserIdentityId,
     onGetUserIdentityRole,
     adminRoleName,
-    employerRoleName
+    employerRoleName,
+    userRoleName
 } from '../../utillities/UserIdentity';
 
 const {
@@ -102,9 +104,63 @@ class Job extends Component {
             let res = await getJobById(jobId);
             res = await res.json();
             this.state.job = res;
+            this.onCheckJoined(res);
             this.setState(this.state);
 
             this.onSetMarkedJob(res);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    onCheckJoined= async (job)=>{
+        let role = null;
+        role = await onGetUserIdentityRole();
+        if(role!=userRoleName){
+            return;
+        }
+        onGetUserIdentityId()
+            .then(userId=>{
+                if(userId){
+                    const index = job.joinedUsers.indexOf(userId);
+                    if(index>-1){
+                        this.state.joinDisplay = 'none';
+                        this.state.unJoinDisplay = 'flex';
+                        this.setState(this.state);
+                    }
+                }
+            })
+            .catch(err=>{
+                console.log(err);
+            });
+    }
+
+    onUnJoinFromJob= async()=>{
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            const { navigate } = this.props.navigation;
+            const job = this.state.job;
+            if (userToken) {
+                const userId = await onGetUserIdentityId();
+                const params = this.params;
+                const { jobId } = params;
+                if (userId && jobId) {  
+                    unJoinFromJob(jobId,userId)
+                    .then(async (result)=>{
+                        const res = await result.json();
+                        if(res.success){
+                            this.state.joinDisplay = 'flex';
+                            this.state.unJoinDisplay= 'none';
+                            this.setState(this.state);
+                        }
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    });
+                }
+            } else {
+                // navigate('LoginSreen');
+            }
         } catch (err) {
             console.log(err);
         }
@@ -226,7 +282,9 @@ class Job extends Component {
                                 />
                                 <Text style={[smallText, { color: white, fontWeight: 'bold' }]}> Tham gia</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.btnJoin,{display:unJoinDisplay}]}>
+                            <TouchableOpacity style={[styles.btnJoin,{display:unJoinDisplay}]}
+                                onPress={this.onUnJoinFromJob}
+                            >
                                 <MaterialIcons
                                     size={fontScale(14)}
                                     name={'backspace'}

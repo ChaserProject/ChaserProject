@@ -34,6 +34,7 @@ class SearchInput extends Component {
     render() {
         // const { navigate } = this.props.navigation;
         const { hideInput } = this.state;
+        const {dispatch} = this.props;
         return (
             <View
                 style={{
@@ -70,6 +71,7 @@ class SearchInput extends Component {
                             }}
                             onChangeText={(name) => {
                                 this.setState({ name });
+                                dispatch({ type: 'SET_HOME_SEARCH_NAME', name });
                             }}
                             underlineColorAndroid='transparent'
                             placeholder={Languages.MainSearch}
@@ -77,7 +79,16 @@ class SearchInput extends Component {
                             selectionColor={white}
                         />
                     </Animated.View>
-                    <TouchableOpacity onPress={() => (hideInput === width ? this.onShowOrHideInput(0) : this.onShowOrHideInput(width))}>
+                    <TouchableOpacity onPress={() => {
+                            if(hideInput === width){
+                                this.state.name='';
+                                this.setState(this.state);
+                                dispatch({ type: 'SET_HOME_SEARCH_NAME', name:'' });
+                                this.onShowOrHideInput(0);
+                            }else {
+                                this.onShowOrHideInput(width);
+                            }
+                        }}>
                         <MaterialIcons
                             name={'search'}
                             size={fontScale(24)}
@@ -100,7 +111,7 @@ class SearchInput extends Component {
 }
 
 function mapStateToProps(state) {
-    return { lang: state.lang };
+    return { lang: state.lang, homeSearchName: state.homeSearchName };
 }
 
 export default connect(mapStateToProps)(SearchInput);

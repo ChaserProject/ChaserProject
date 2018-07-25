@@ -23,7 +23,7 @@ const HomeRouter = StackNavigator({
     HomeScreen: {
         screen: Home,
         navigationOptions: ({ navigation }) => ({
-            headerTitle: <HomeTopBarTitle />,
+            headerTitle: <HomeTopBarTitle navigation={navigation} />,
             headerStyle: {
                 backgroundColor: black,
                 shadowColor: black,

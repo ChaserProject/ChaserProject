@@ -44,6 +44,9 @@ class Notification extends Component {
             this.setState(this.state);
             this.onGetNotification();
         }
+        if(nextProps.notificationState !== this.props.notificationState){
+            this.onGetNotification();
+        }
     }
 
     onGetNotification = async () => {
@@ -81,12 +84,15 @@ class Notification extends Component {
 
     onNavigate = async (navigate, notification) => {
         try {
+            const { dispatch } = this.props;
             const userId = await onGetUserIdentityId();
             let res = await readNotification(notification._id, userId);
             res = await res.json();
             if (res.success) {
                 navigate('JobSreen', { jobId: notification.job });
             }
+            dispatch({ type: 'CHANGE_NOTIFICATION_STATE' });
+            console.log('state:', this.props.notificationState);
         } catch (err) {
             console.log(err);
         }
@@ -104,7 +110,9 @@ class Notification extends Component {
         })
         return (<TouchableOpacity
             style={{backgroundColor}}
-            onPress={() => this.onNavigate(navigate, notification)}
+            onPress={() => {
+                this.onNavigate(navigate, notification);
+            }}
         >
             <View
                 style={{
@@ -193,7 +201,11 @@ class Notification extends Component {
 }
 
 function mapStateToProps(state) {
-    return { lang: state.lang, hasToken: state.hasToken };
+    return { 
+        lang: state.lang, 
+        hasToken: state.hasToken,
+        notificationState: state.notificationState
+    };
 }
 
 export default connect(mapStateToProps)(Notification);

@@ -6,6 +6,8 @@ import {
     JobIdToMarkReducer, MarkJobReducer, MarkedJobChangeReducer
 } from '../reducer/JobTopBarRightReducer';
 import TokenReducer from '../reducer/TokenReducer';
+import ProvinceIdReducer from '../reducer/ProvinceIdReducer';
+import NotificationStateReducer from '../reducer/NotificationStateReducer';
 
 const reducer = combineReducers({
     lang: LangReducer,
@@ -14,7 +16,9 @@ const reducer = combineReducers({
     jobIdToMark: JobIdToMarkReducer,
     isMarkedJobChange: MarkedJobChangeReducer,
     badgeCount: BadgeCountReducer,
-    hasToken : TokenReducer
+    hasToken : TokenReducer,
+    provinceOrderId: ProvinceIdReducer,
+    notificationState: NotificationStateReducer
 });
 
 const store = createStore(reducer);
